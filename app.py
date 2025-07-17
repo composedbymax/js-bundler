@@ -5,7 +5,7 @@ class JSBundler:
     def __init__(self, master):
         self.master = master
         master.title("JS Bundler")
-        master.geometry("600x400")
+        master.geometry("600x450")
         self.file_list = []
         self.listbox = tk.Listbox(master, selectmode=tk.SINGLE, width=80)
         self.listbox.pack(pady=10, expand=True)
@@ -19,7 +19,11 @@ class JSBundler:
         self.remove_button.grid(row=0, column=2, padx=5)
         self.clear_button = tk.Button(btn_frame, text="Clear All", command=self.clear_files)
         self.clear_button.grid(row=0, column=3, padx=5)
-        self.bundle_button = tk.Button(master, text="Bundle JS", command=self.bundle_files, bg="green", fg="white")
+        self.up_button = tk.Button(btn_frame, text="↑ Move Up", command=self.move_up)
+        self.up_button.grid(row=1, column=0, columnspan=2, pady=5)
+        self.down_button = tk.Button(btn_frame, text="↓ Move Down", command=self.move_down)
+        self.down_button.grid(row=1, column=2, columnspan=2, pady=5)
+        self.bundle_button = tk.Button(master, text="Bundle JS", command=self.bundle_files)
         self.bundle_button.pack(pady=15)
     def add_files(self):
         files = filedialog.askopenfilenames(filetypes=[("JavaScript Files", "*.js")])
@@ -47,6 +51,24 @@ class JSBundler:
     def clear_files(self):
         self.file_list.clear()
         self.listbox.delete(0, tk.END)
+    def move_up(self):
+        selected = self.listbox.curselection()
+        if selected and selected[0] > 0:
+            index = selected[0]
+            self.file_list[index - 1], self.file_list[index] = self.file_list[index], self.file_list[index - 1]
+            text = self.listbox.get(index)
+            self.listbox.delete(index)
+            self.listbox.insert(index - 1, text)
+            self.listbox.select_set(index - 1)
+    def move_down(self):
+        selected = self.listbox.curselection()
+        if selected and selected[0] < len(self.file_list) - 1:
+            index = selected[0]
+            self.file_list[index + 1], self.file_list[index] = self.file_list[index], self.file_list[index + 1]
+            text = self.listbox.get(index)
+            self.listbox.delete(index)
+            self.listbox.insert(index + 1, text)
+            self.listbox.select_set(index + 1)
     def bundle_files(self):
         if not self.file_list:
             messagebox.showwarning("No Files", "Please add some JS files first.")
