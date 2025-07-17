@@ -13,10 +13,12 @@ class JSBundler:
         btn_frame.pack()
         self.add_button = tk.Button(btn_frame, text="Add JS Files", command=self.add_files)
         self.add_button.grid(row=0, column=0, padx=5)
+        self.add_folder_button = tk.Button(btn_frame, text="Add All in This Folder", command=self.add_folder_js_files)
+        self.add_folder_button.grid(row=0, column=1, padx=5)
         self.remove_button = tk.Button(btn_frame, text="Remove Selected", command=self.remove_selected)
-        self.remove_button.grid(row=0, column=1, padx=5)
+        self.remove_button.grid(row=0, column=2, padx=5)
         self.clear_button = tk.Button(btn_frame, text="Clear All", command=self.clear_files)
-        self.clear_button.grid(row=0, column=2, padx=5)
+        self.clear_button.grid(row=0, column=3, padx=5)
         self.bundle_button = tk.Button(master, text="Bundle JS", command=self.bundle_files, bg="green", fg="white")
         self.bundle_button.pack(pady=15)
     def add_files(self):
@@ -25,6 +27,17 @@ class JSBundler:
             if file not in self.file_list:
                 self.file_list.append(file)
                 self.listbox.insert(tk.END, os.path.basename(file))
+    def add_folder_js_files(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        js_files = [os.path.join(script_dir, f) for f in os.listdir(script_dir) if f.endswith(".js")]
+        added_count = 0
+        for file in js_files:
+            if file not in self.file_list:
+                self.file_list.append(file)
+                self.listbox.insert(tk.END, os.path.basename(file))
+                added_count += 1
+        if added_count == 0:
+            messagebox.showinfo("No JS Files", "No JS files found in this folder or all are already added.")
     def remove_selected(self):
         selected = self.listbox.curselection()
         if selected:
